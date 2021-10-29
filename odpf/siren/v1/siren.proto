@@ -98,6 +98,38 @@ service SirenService {
         };
     }
 
+    rpc ListSubscriptions(google.protobuf.Empty) returns (ListSubscriptionsResponse) {
+        option (google.api.http) = {
+            get: "/subscriptions"
+        };
+    }
+
+    rpc CreateSubscription(CreateSubscriptionRequest) returns (Subscription) {
+        option (google.api.http) = {
+            post: "/subscriptions"
+            body: "*"
+        };
+    }
+
+    rpc GetSubscription(GetSubscriptionRequest) returns (Subscription) {
+        option (google.api.http) = {
+            get: "/subscriptions/{id}"
+        };
+    }
+
+    rpc UpdateSubscription(UpdateSubscriptionRequest) returns (Subscription) {
+        option (google.api.http) = {
+            put: "/subscriptions/{id}",
+            body: "*"
+        };
+    }
+
+    rpc DeleteSubscription(DeleteSubscriptionRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/subscriptions/{id}"
+        };
+    }
+
     rpc ListReceivers(google.protobuf.Empty) returns (ListReceiversResponse) {
         option (google.api.http) = {
             get: "/receivers"
@@ -308,6 +340,48 @@ message UpdateNamespaceRequest {
 }
 
 message DeleteNamespaceRequest {
+    uint64 id = 1;
+}
+
+message ReceiverMetadata {
+    uint64 id = 1; 
+    map<string, string> configuration = 4;
+}
+
+message Subscription {
+    uint64 id = 1;
+    string urn = 2 [(validate.rules).string.pattern = "^[A-Za-z0-9_-]+$"];
+    uint64 namespace = 3; 
+    repeated ReceiverMetadata receivers = 4;
+    map<string, string> match = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+}
+
+message ListSubscriptionsResponse {
+    repeated Subscription subscriptions = 1;
+}
+
+message CreateSubscriptionRequest {
+    string urn = 1 [(validate.rules).string.pattern = "^[A-Za-z0-9_-]+$"];
+    uint64 namespace = 2; 
+    repeated ReceiverMetadata receivers = 3;
+    map<string, string> match = 4;
+}
+
+message GetSubscriptionRequest {
+    uint64 id = 1;
+}
+
+message UpdateSubscriptionRequest {
+    uint64 id = 1;
+    string urn = 2 [(validate.rules).string.pattern = "^[A-Za-z0-9_-]+$"];
+    uint64 namespace = 3; 
+    repeated ReceiverMetadata receivers = 4;
+    map<string, string> match = 5;
+}
+
+message DeleteSubscriptionRequest {
     uint64 id = 1;
 }
 
